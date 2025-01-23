@@ -1,4 +1,4 @@
-from django.contricleaner.lib.parsing_strategies.abstractions.strategy import (
+from contricleaner.lib.parsing_strategies.abstractions.strategy import (
     ParsingStrategy
 )
 from contricleaner.lib.parsers.parsing_executor import (
