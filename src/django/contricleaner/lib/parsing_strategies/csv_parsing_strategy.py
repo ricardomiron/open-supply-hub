@@ -1,5 +1,7 @@
 from typing import List
-from contricleaner.lib.parsing_strategies.abstractions.parsing_strategy import (ParsingStrategy)
+from django.contricleaner.lib.parsing_strategies.abstractions.strategy import (
+    ParsingStrategy
+    )
 from contricleaner.lib.parsers.parsing_executor import (
     ParsingExecutor
 )

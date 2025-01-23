@@ -87,9 +87,7 @@ class ContriCleaner:
           "xlsx", "csv"
         """
         strategy_key = f"{self.source_type}_{self.operation_type}"
-        print('!!! strategy_key', strategy_key)
         strategy = self.strategies.get(strategy_key)
-        print('!!! strategy', strategy)
         if not strategy:
             raise ParsingError(f"No parsing strategy for: {strategy_key}")
 
@@ -110,11 +108,18 @@ class ContriCleaner:
     def get_operation_type_for_file(self) -> bool:
         """Get operation type based on file extension"""
         file_extension = os.path.splitext(self.__data.name)[1].lower()
-        if file_extension != FileExtension.CSV and file_extension != FileExtension.XLSX:
+        if (
+            file_extension != FileExtension.CSV
+            and file_extension != FileExtension.XLSX
+        ):
             raise ParsingError(
                 'We cannot accept the type of file you submitted. Please '
                 'change your file to an Excel or UTF-8 CSV and reupload.'
             )
-        operation_type = OperationType.XLSX if file_extension == FileExtension.XLSX else OperationType.CSV
+        operation_type = (
+            OperationType.XLSX
+            if file_extension == FileExtension.XLSX
+            else OperationType.CSV
+        )
 
         return operation_type

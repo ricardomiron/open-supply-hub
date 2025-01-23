@@ -222,13 +222,14 @@ class SourceParserXLSXTest(TestCase):
             uploaded_file = SimpleUploadedFile('test.xlsx', file_content)
 
         contri_cleaner = ContriCleaner(uploaded_file, SectorCacheMock())
-        processed_list = contri_cleaner.process_data(SourceType.FILE, OperationType.XLSX)
+        processed_list = contri_cleaner.process_data(
+            SourceType.FILE, OperationType.XLSX)
 
         self.assertEqual(processed_list.rows, expected_processed_list.rows)
 
         os.remove('test.xlsx')
 
-    @patch('contricleaner.lib.parsers.source_parser_xlsx.load_workbook')
+    @patch('contricleaner.lib.parsers.xlsx_parser.load_workbook')
     def test_entities_forbidden_exception(self, mock_load_workbook):
         mock_load_workbook.side_effect = EntitiesForbidden(
             name='', value='', base='', sysid='', pubid='', notation_name=''

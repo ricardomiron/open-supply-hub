@@ -1,10 +1,10 @@
 import os
 import csv
-from unittest.mock import MagicMock
+# from unittest.mock import MagicMock
 
 from django.test import TestCase
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.core.files.base import File
+# from django.core.files.base import File
 from openpyxl import Workbook
 
 from contricleaner.lib.contri_cleaner import ContriCleaner
@@ -83,7 +83,8 @@ class ContriCleanerTest(TestCase):
             uploaded_file = SimpleUploadedFile('test.xlsx', file_content)
 
         contri_cleaner = ContriCleaner(uploaded_file, SectorCacheMock())
-        processed_list = contri_cleaner.process_data(SourceType.FILE, OperationType.XLSX)
+        processed_list = contri_cleaner.process_data(
+            SourceType.FILE, OperationType.XLSX)
 
         self.assertEqual(len(processed_list.rows), len(expected_result.rows))
         self.assertEqual(processed_list, expected_result)
@@ -148,7 +149,8 @@ class ContriCleanerTest(TestCase):
             uploaded_file = SimpleUploadedFile('test.csv', file_content)
 
         contri_cleaner = ContriCleaner(uploaded_file, SectorCacheMock())
-        processed_list = contri_cleaner.process_data(SourceType.FILE, OperationType.CSV)
+        processed_list = contri_cleaner.process_data(
+            SourceType.FILE, OperationType.CSV)
 
         self.assertEqual(len(processed_list.rows), len(expected_result.rows))
         self.assertEqual(processed_list, expected_result)
@@ -168,7 +170,8 @@ class ContriCleanerTest(TestCase):
 
     #     contri_cleaner = ContriCleaner(temp_uploaded_file_stub,
     #                                    SectorCacheMock())
-    #     contri_cleaner_processed_data = contri_cleaner.process_data(SourceType.FILE, OperationType)
+    #     contri_cleaner_processed_data = contri_cleaner.process_data(
+    # SourceType.FILE, OperationType)
     #     error_dict = contri_cleaner_processed_data.errors[0]
     #     error_message = error_dict['message']
     #     error_type = error_dict['type']
@@ -207,7 +210,8 @@ class ContriCleanerTest(TestCase):
         )
 
         contri_cleaner = ContriCleaner(json_data, SectorCacheMock())
-        processed_list = contri_cleaner.process_data(SourceType.API, OperationType.FACILITIES)
+        processed_list = contri_cleaner.process_data(
+            SourceType.API, OperationType.FACILITIES)
 
         self.assertEqual(len(processed_list.rows), len(expected_result.rows))
         self.assertEqual(processed_list, expected_result)
