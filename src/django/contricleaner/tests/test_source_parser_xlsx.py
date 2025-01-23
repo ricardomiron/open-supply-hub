@@ -10,7 +10,7 @@ from django.core.files.base import File
 from openpyxl import Workbook
 from openpyxl.styles import NamedStyle
 
-from contricleaner.lib.parsers.source_parser_xlsx import SourceParserXLSX
+from contricleaner.lib.parsers.xlsx_parser import XLSXParser
 from contricleaner.lib.parsers.abstractions.source_parser import (
     SourceParser
 )
@@ -22,12 +22,13 @@ from contricleaner.lib.contri_cleaner import ContriCleaner
 from contricleaner.lib.dto.list_dto import ListDTO
 from contricleaner.lib.dto.row_dto import RowDTO
 from contricleaner.tests.sector_cache_mock import SectorCacheMock
+from contricleaner.constants import SourceType, OperationType
 
 
 class SourceParserXLSXTest(TestCase):
     def test_class_inherits_required_classes(self):
         temp_uploaded_file_stub = MagicMock(spec=File)
-        source_parser_xlsx = SourceParserXLSX(temp_uploaded_file_stub)
+        source_parser_xlsx = XLSXParser(temp_uploaded_file_stub)
         self.assertIsInstance(source_parser_xlsx, SourceParser)
         self.assertIsInstance(source_parser_xlsx, FileParser)
 
@@ -221,7 +222,7 @@ class SourceParserXLSXTest(TestCase):
             uploaded_file = SimpleUploadedFile('test.xlsx', file_content)
 
         contri_cleaner = ContriCleaner(uploaded_file, SectorCacheMock())
-        processed_list = contri_cleaner.process_data()
+        processed_list = contri_cleaner.process_data(SourceType.FILE, OperationType.XLSX)
 
         self.assertEqual(processed_list.rows, expected_processed_list.rows)
 
@@ -233,7 +234,7 @@ class SourceParserXLSXTest(TestCase):
             name='', value='', base='', sysid='', pubid='', notation_name=''
         )
         temp_uploaded_file_stub = MagicMock(spec=File)
-        parser = SourceParserXLSX(temp_uploaded_file_stub)
+        parser = XLSXParser(temp_uploaded_file_stub)
 
         with self.assertRaisesRegex(
                 ParsingError,

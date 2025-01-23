@@ -10,14 +10,14 @@ from contricleaner.lib.parsers.abstractions.file_parser import FileParser
 from contricleaner.lib.exceptions.parsing_error import ParsingError
 
 
-class SourceParserXLSX(SourceParser, FileParser):
+class XLSXParser(SourceParser, FileParser):
     def get_parsed_rows(self) -> List[dict]:
         return self._parse(self._file)
 
     @staticmethod
     def _parse(file: File) -> List[dict]:
         try:
-            worksheet = SourceParserXLSX.__get_xlsx_sheet(file)
+            worksheet = XLSXParser.__get_xlsx_sheet(file)
 
             # openpyxl package is 1-indexed
             percent_col = [get_column_letter(cell.column)
@@ -28,7 +28,7 @@ class SourceParserXLSX(SourceParser, FileParser):
                 for col in percent_col:
                     for cell in worksheet[col]:
                         if cell.row != 1:
-                            cell.value = SourceParserXLSX.__format_percent(
+                            cell.value = XLSXParser.__format_percent(
                                 cell.value
                             )
 
@@ -37,11 +37,11 @@ class SourceParserXLSX(SourceParser, FileParser):
             # the data rows to skip the header row.
             first_row = next(worksheet_rows)
             header = [
-                SourceParserXLSX.__format_cell_value(cell.value)
+                XLSXParser.__format_cell_value(cell.value)
                 for cell in first_row
             ]
 
-            rows = [dict(zip(header, SourceParserXLSX.__tidy_row(row)))
+            rows = [dict(zip(header, XLSXParser.__tidy_row(row)))
                     for row in worksheet_rows
                     if any(cell.value is not None for cell in row)]
 
@@ -58,7 +58,7 @@ class SourceParserXLSX(SourceParser, FileParser):
 
         for cell in row:
             formatted_cell_value = \
-                SourceParserXLSX.__format_cell_value(cell.value)
+                XLSXParser.__format_cell_value(cell.value)
             formatted_row.append(formatted_cell_value)
 
         return formatted_row

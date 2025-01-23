@@ -3,7 +3,7 @@ from typing import List
 from contricleaner.lib.parsers.abstractions.source_parser import SourceParser
 
 
-class SourceParserJSON(SourceParser):
+class JSONParser(SourceParser):
 
     def __init__(self, data: dict):
         self.data = data

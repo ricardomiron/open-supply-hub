@@ -6,16 +6,15 @@ from django.core.files.base import File
 from contricleaner.lib.client_abstractions.sector_cache_interface import (
     SectorCacheInterface
 )
-from contricleaner.lib.parsers.parsing_executor import (
-    ParsingExecutor
+from contricleaner.lib.parsing_strategies.json_parsing_strategy import (
+    JSONParsingStrategy
 )
-from contricleaner.lib.parsers.source_parser_xlsx import (
-    SourceParserXLSX
+from contricleaner.lib.parsing_strategies.xlsx_parsing_strategy import (
+    XLSXParsingStrategy
 )
-from contricleaner.lib.parsers.source_parser_csv import (
-    SourceParserCSV
+from contricleaner.lib.parsing_strategies.csv_parsing_strategy import (
+    CSVParsingStrategy
 )
-from contricleaner.lib.parsers.source_parser_json import SourceParserJSON
 from contricleaner.lib.dto.list_dto import ListDTO
 from contricleaner.lib.exceptions.parsing_error import ParsingError
 from contricleaner.lib.handlers.list_row_handler import ListRowHandler
@@ -23,7 +22,7 @@ from contricleaner.lib.handlers.pre_validation_handler \
     import PreValidationHandler
 from contricleaner.lib.handlers.serialization_handler \
     import SerializationHandler
-from contricleaner.constants import NON_FIELD_ERRORS_KEY
+from contricleaner.constants import NON_FIELD_ERRORS_KEY, OperationType, FileExtension
 
 
 class ContriCleaner:
@@ -49,7 +48,17 @@ class ContriCleaner:
         self.__data = data
         self.__sector_cache = sector_cache
 
-    def process_data(self) -> ListDTO:
+        self.strategies = {
+            "api_post_facilities": JSONParsingStrategy(),
+            "api_post_patch_production_location": JSONParsingStrategy(),
+            "file_xlsx": XLSXParsingStrategy(),
+            "file_csv": CSVParsingStrategy()
+        }
+
+    def process_data(self, source_type, operation_type) -> ListDTO:
+        self.source_type = source_type
+        self.operation_type = operation_type
+
         try:
             parsed_rows = self.__parse_data()
         except ParsingError as err:
@@ -71,25 +80,20 @@ class ContriCleaner:
 
         return parsed_rows
 
-    def __define_parsing_strategy(self) -> ParsingExecutor:
-        if isinstance(self.__data, dict):
-            parsing_executor = ParsingExecutor(SourceParserJSON(self.__data))
-        else:
-            ext = os.path.splitext(self.__data.name)[1].lower()
-            if ext == '.xlsx':
-                parsing_executor = ParsingExecutor(
-                    SourceParserXLSX(self.__data)
-                )
-            elif ext == '.csv':
-                parsing_executor = ParsingExecutor(
-                    SourceParserCSV(self.__data)
-                )
-            else:
-                raise ParsingError(
-                    'We cannot accept the type of file you submitted. Please '
-                    'change your file to an Excel or UTF-8 CSV and reupload.'
-                )
-        return parsing_executor
+    def __define_parsing_strategy(self):
+        """
+        source_type: "api" (API Upload) or "file" (List Upload)
+        operation_type: "post_facilities", "post_patch_production_location",
+          "xlsx", "csv"
+        """
+        strategy_key = f"{self.source_type}_{self.operation_type}"
+        print('!!! strategy_key', strategy_key)
+        strategy = self.strategies.get(strategy_key)
+        print('!!! strategy', strategy)
+        if not strategy:
+            raise ParsingError(f"No parsing strategy for: {strategy_key}")
+
+        return strategy.define_parsing_strategy(self.__data)
 
     def __setup_handlers(self) -> ListRowHandler:
         handlers = (
@@ -102,3 +106,15 @@ class ContriCleaner:
         entry_handler = handlers[0]
 
         return entry_handler
+
+    def get_operation_type_for_file(self) -> bool:
+        """Get operation type based on file extension"""
+        file_extension = os.path.splitext(self.__data.name)[1].lower()
+        if file_extension != FileExtension.CSV and file_extension != FileExtension.XLSX:
+            raise ParsingError(
+                'We cannot accept the type of file you submitted. Please '
+                'change your file to an Excel or UTF-8 CSV and reupload.'
+            )
+        operation_type = OperationType.XLSX if file_extension == FileExtension.XLSX else OperationType.CSV
+
+        return operation_type

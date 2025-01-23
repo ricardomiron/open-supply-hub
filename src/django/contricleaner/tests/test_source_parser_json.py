@@ -1,4 +1,4 @@
-from contricleaner.lib.parsers.source_parser_json import SourceParserJSON
+from contricleaner.lib.parsers.json_parser import JSONParser
 
 from django.test import TestCase
 
@@ -11,7 +11,7 @@ class SourceParserJsonTest(TestCase):
             "address": "1234 Main St",
         }
 
-        self.parser = SourceParserJSON(self.json_data)
+        self.parser = JSONParser(self.json_data)
 
     def test_get_parsed_rows(self):
         # Ensure get_parsed_rows returns a list containing
@@ -23,7 +23,7 @@ class SourceParserJsonTest(TestCase):
 
     def test_empty_json(self):
         # Test behavior when initialized with an empty JSON
-        empty_json_parser = SourceParserJSON({})
+        empty_json_parser = JSONParser({})
         parsed_rows = empty_json_parser.get_parsed_rows()
         self.assertIsInstance(parsed_rows, list)
         self.assertEqual(len(parsed_rows), 1)
@@ -31,7 +31,7 @@ class SourceParserJsonTest(TestCase):
 
     def test_invalid_json(self):
         # Test behavior when initialized with invalid JSON data
-        invalid_json_parser = SourceParserJSON(None)
+        invalid_json_parser = JSONParser(None)
         parsed_rows = invalid_json_parser.get_parsed_rows()
         self.assertIsInstance(parsed_rows, list)
         self.assertEqual(len(parsed_rows), 1)

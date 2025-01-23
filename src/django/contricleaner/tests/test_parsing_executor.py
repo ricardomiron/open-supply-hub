@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from contricleaner.lib.parsers.source_parser_json import SourceParserJSON
+from contricleaner.lib.parsers.json_parser import JSONParser
 from contricleaner.lib.parsers.parsing_executor import (
     ParsingExecutor,
 )
@@ -17,7 +17,7 @@ class TestParsingExecutor(TestCase):
     def test_parsing_execution(self):
         # Test when a single valid row is returned
         parsing_executor = ParsingExecutor(
-            SourceParserJSON(self.json_data)
+            JSONParser(self.json_data)
         )
         result = parsing_executor.execute_parsing()
         expected_result = [{

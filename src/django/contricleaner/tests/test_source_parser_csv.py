@@ -8,7 +8,7 @@ from django.core.files.uploadedfile import (
 )
 from django.core.files.base import File
 
-from contricleaner.lib.parsers.source_parser_csv import SourceParserCSV
+from contricleaner.lib.parsers.csv_parser import CSVParser
 from contricleaner.lib.parsers.abstractions.source_parser import (
     SourceParser
 )
@@ -19,12 +19,13 @@ from contricleaner.lib.contri_cleaner import ContriCleaner
 from contricleaner.lib.dto.list_dto import ListDTO
 from contricleaner.lib.dto.row_dto import RowDTO
 from contricleaner.tests.sector_cache_mock import SectorCacheMock
+from contricleaner.constants import SourceType, OperationType
 
 
 class SourceParserCSVTest(TestCase):
     def test_class_inherits_required_classes(self):
         temp_uploaded_file_stub = MagicMock(spec=File)
-        source_parser_csv = SourceParserCSV(temp_uploaded_file_stub)
+        source_parser_csv = CSVParser(temp_uploaded_file_stub)
         self.assertIsInstance(source_parser_csv, SourceParser)
         self.assertIsInstance(source_parser_csv, FileParser)
 
@@ -147,7 +148,7 @@ class SourceParserCSVTest(TestCase):
             uploaded_file = SimpleUploadedFile('test.csv', file_content)
 
         contri_cleaner = ContriCleaner(uploaded_file, SectorCacheMock())
-        processed_list = contri_cleaner.process_data()
+        processed_list = contri_cleaner.process_data(SourceType.FILE, OperationType.CSV)
 
         self.assertEqual(processed_list.rows, expected_processed_list.rows)
 
@@ -168,7 +169,7 @@ class SourceParserCSVTest(TestCase):
             uploaded_file = SimpleUploadedFile('test.csv', file_content)
 
         contri_cleaner = ContriCleaner(uploaded_file, SectorCacheMock())
-        processed_data = contri_cleaner.process_data()
+        processed_data = contri_cleaner.process_data(SourceType.FILE, OperationType.CSV)
 
         error_dict = processed_data.errors[0]
         error_message = error_dict['message']

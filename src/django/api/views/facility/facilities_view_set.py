@@ -10,6 +10,7 @@ from api.models.facility.facility_index import FacilityIndex
 from contricleaner.lib.contri_cleaner import ContriCleaner
 from contricleaner.lib.exceptions.handler_not_set_error \
     import HandlerNotSetError
+from contricleaner.constants import SourceType, OperationType
 
 from api.exceptions import ServiceUnavailableException
 from api.helpers.helpers import validate_workers_count
@@ -614,7 +615,7 @@ class FacilitiesViewSet(ListModelMixin,
 
         contri_cleaner = ContriCleaner(request.data, SectorCache())
         try:
-            contri_cleaner_processed_data = contri_cleaner.process_data()
+            contri_cleaner_processed_data = contri_cleaner.process_data(SourceType.API, OperationType.FACILITIES)
         except HandlerNotSetError as err:
             log.error(f'[API Upload] Internal ContriCleaner Error: {err}')
             raise APIException('Internal System Error. '

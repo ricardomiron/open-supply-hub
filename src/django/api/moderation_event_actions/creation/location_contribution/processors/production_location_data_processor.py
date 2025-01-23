@@ -8,6 +8,7 @@ from api.sector_cache import SectorCache
 from contricleaner.lib.contri_cleaner import ContriCleaner
 from contricleaner.lib.exceptions.handler_not_set_error \
     import HandlerNotSetError
+from contricleaner.constants import SourceType, OperationType
 from api.moderation_event_actions.creation.location_contribution \
     .processors.contribution_processor import ContributionProcessor
 from api.moderation_event_actions.creation.dtos.create_moderation_event_dto \
@@ -30,7 +31,7 @@ class ProductionLocationDataProcessor(ContributionProcessor):
 
         contri_cleaner = ContriCleaner(mapped_data, SectorCache())
         try:
-            cc_processed_data = contri_cleaner.process_data()
+            cc_processed_data = contri_cleaner.process_data(SourceType.API, OperationType.PRODUCTION_LOCATION)
         except HandlerNotSetError as err:
             log.error(
                 f'[API V1 Location Upload] Internal ContriCleaner Error: {err}'

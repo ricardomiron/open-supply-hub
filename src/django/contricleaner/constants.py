@@ -5,3 +5,20 @@ DEFAULT_SECTOR_NAME = 'Unspecified'
 # error isn’t field-specific, ContriCleaner will use the non_field_errors key
 # for issues spanning multiple fields or related to the overall data object.
 NON_FIELD_ERRORS_KEY = 'non_field_errors'
+
+
+class SourceType:
+    API = 'api'
+    FILE = 'file'
+
+
+class OperationType:
+    FACILITIES = "post_facilities"
+    PRODUCTION_LOCATION = "post_patch_production_location"
+    XLSX = "xlsx"
+    CSV = "csv"
+
+
+class FileExtension:
+    CSV = '.csv'
+    XLSX = '.xlsx'

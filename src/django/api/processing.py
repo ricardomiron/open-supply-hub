@@ -19,6 +19,7 @@ from api.models.facility.facility_list import FacilityList
 from contricleaner.lib.contri_cleaner import ContriCleaner
 from contricleaner.lib.exceptions.handler_not_set_error \
     import HandlerNotSetError
+from contricleaner.constants import SourceType
 from api.sector_cache import SectorCache
 from api.facility_actions.processing_facility_executor import (
     ProcessingFacilityExecutor
@@ -47,7 +48,8 @@ def parse_production_location_list(location_list: FacilityList):
         'parsing_started': parsing_started
     }
     try:
-        contri_cleaner_processed_data = contri_cleaner.process_data()
+        operation_type = contri_cleaner.get_operation_type_for_file()
+        contri_cleaner_processed_data = contri_cleaner.process_data(SourceType.FILE, operation_type)
         processing_input['contri_cleaner_processed_data'] = \
             contri_cleaner_processed_data
     except HandlerNotSetError as err:

@@ -8,7 +8,7 @@ from contricleaner.lib.parsers.abstractions.file_parser import FileParser
 from contricleaner.lib.exceptions.parsing_error import ParsingError
 
 
-class SourceParserCSV(SourceParser, FileParser):
+class CSVParser(SourceParser, FileParser):
     def get_parsed_rows(self) -> List[dict]:
         return self._parse(self._file)
 
@@ -24,9 +24,9 @@ class SourceParserCSV(SourceParser, FileParser):
                                'reupload.')
 
         rows = []
-        header = SourceParserCSV.__parse_csv_line(decoded_content[0].rstrip())
+        header = CSVParser.__parse_csv_line(decoded_content[0].rstrip())
         for line in decoded_content[1:]:
-            bare_row = SourceParserCSV.__parse_csv_line(line.rstrip())
+            bare_row = CSVParser.__parse_csv_line(line.rstrip())
             rows.append(dict(zip(header, bare_row)))
 
         return rows
