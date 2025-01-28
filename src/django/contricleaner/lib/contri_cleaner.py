@@ -22,7 +22,8 @@ from contricleaner.lib.handlers.pre_validation_handler \
     import PreValidationHandler
 from contricleaner.lib.handlers.serialization_handler \
     import SerializationHandler
-from contricleaner.constants import NON_FIELD_ERRORS_KEY, OperationType, FileExtension
+from contricleaner.constants import (
+  NON_FIELD_ERRORS_KEY, OperationType, FileExtension, FILE_EXTENSION_ERROR)
 
 
 class ContriCleaner:
@@ -86,6 +87,8 @@ class ContriCleaner:
         operation_type: "post_facilities", "post_patch_production_location",
           "xlsx", "csv"
         """
+        if self.operation_type == '':
+            raise ParsingError(f"{FILE_EXTENSION_ERROR}")
         strategy_key = f"{self.source_type}_{self.operation_type}"
         strategy = self.strategies.get(strategy_key)
         if not strategy:
@@ -105,17 +108,13 @@ class ContriCleaner:
 
         return entry_handler
 
-    def get_operation_type_for_file(self) -> bool:
+    def get_operation_type_for_file(self) -> str:
         """Get operation type based on file extension"""
         file_extension = os.path.splitext(self.__data.name)[1].lower()
-        if (
-            file_extension != FileExtension.CSV
-            and file_extension != FileExtension.XLSX
-        ):
-            raise ParsingError(
-                'We cannot accept the type of file you submitted. Please '
-                'change your file to an Excel or UTF-8 CSV and reupload.'
-            )
+
+        if file_extension not in {FileExtension.CSV, FileExtension.XLSX}:
+            return ''
+
         operation_type = (
             OperationType.XLSX
             if file_extension == FileExtension.XLSX

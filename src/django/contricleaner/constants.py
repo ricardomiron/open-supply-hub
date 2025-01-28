@@ -22,3 +22,7 @@ class OperationType:
 class FileExtension:
     CSV = '.csv'
     XLSX = '.xlsx'
+
+
+FILE_EXTENSION_ERROR = 'We cannot accept the type of file you submitted.\
+      Please change your file to an Excel or UTF-8 CSV and reupload.'

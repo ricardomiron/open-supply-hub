@@ -1,17 +1,17 @@
 import os
 import csv
-# from unittest.mock import MagicMock
+from unittest.mock import MagicMock
 
 from django.test import TestCase
 from django.core.files.uploadedfile import SimpleUploadedFile
-# from django.core.files.base import File
+from django.core.files.base import File
 from openpyxl import Workbook
 
 from contricleaner.lib.contri_cleaner import ContriCleaner
 from contricleaner.lib.dto.list_dto import ListDTO
 from contricleaner.lib.dto.row_dto import RowDTO
 from contricleaner.tests.sector_cache_mock import SectorCacheMock
-from contricleaner.constants import SourceType, OperationType
+from contricleaner.constants import SourceType, OperationType, FILE_EXTENSION_ERROR
 
 
 class ContriCleanerTest(TestCase):
@@ -157,29 +157,27 @@ class ContriCleanerTest(TestCase):
 
         os.remove('test.csv')
 
-    # def test_submit_unsupported_file_type_throws_exception(self):
-    #     expected_error_message = (
-    #         'We cannot accept the type of file you submitted. Please change '
-    #         'your file to an Excel or UTF-8 CSV and reupload.'
-    #     )
-    #     expected_error_type = 'ParsingError'
-    #     expected_error_field = 'non_field_errors'
+    def test_submit_unsupported_file_type_throws_exception(self):
+        expected_error_type = 'ParsingError'
+        expected_error_field = 'non_field_errors'
 
-    #     temp_uploaded_file_stub = MagicMock(spec=File)
-    #     temp_uploaded_file_stub.name = 'mocked_file_name.txt'
+        temp_uploaded_file_stub = MagicMock(spec=File)
+        temp_uploaded_file_stub.name = 'mocked_file_name.txt'
 
-    #     contri_cleaner = ContriCleaner(temp_uploaded_file_stub,
-    #                                    SectorCacheMock())
-    #     contri_cleaner_processed_data = contri_cleaner.process_data(
-    # SourceType.FILE, OperationType)
-    #     error_dict = contri_cleaner_processed_data.errors[0]
-    #     error_message = error_dict['message']
-    #     error_type = error_dict['type']
-    #     error_field = error_dict['field']
+        contri_cleaner = ContriCleaner(temp_uploaded_file_stub,
+                                       SectorCacheMock())
+        operation_type = contri_cleaner.get_operation_type_for_file()
+        processed_list = contri_cleaner.process_data(
+            SourceType.FILE, operation_type)
 
-    #     self.assertEqual(error_message, expected_error_message)
-    #     self.assertEqual(error_type, expected_error_type)
-    #     self.assertEqual(error_field, expected_error_field)
+        error_dict = processed_list.errors[0]
+        error_message = error_dict['message']
+        error_type = error_dict['type']
+        error_field = error_dict['field']
+
+        self.assertEqual(error_message, FILE_EXTENSION_ERROR)
+        self.assertEqual(error_type, expected_error_type)
+        self.assertEqual(error_field, expected_error_field)
 
     def test_valid_json_processing(self):
         json_data = {
